@@ -13,6 +13,7 @@ class Peliculas {
 }
 
 class Pelicula {
+  String uniqueId;
   int voteCount;
   int id;
   bool video;
@@ -45,27 +46,49 @@ class Pelicula {
     this.releaseDate,
   });
 
-  Pelicula.fromJsonMap(Map<String, dynamic> json) {
-    voteCount = json['vote_count'];
-    id = json['id'];
-    video = json['video'];
-    voteAverage = json['vote_average'] / 1;
-    title = json['title'];
-    popularity = json['popularity'] / 1;
-    posterPath = json['poster_path'];
-    originalLanguage = json['original_language'];
-    originalTitle = json['original_title'];
-    genreIds = json['genre_ids'].cast<int>();
-    backdropPath = json['backdrop_path'];
-    adult = json['adult'];
-    overview = json['overview'];
-    releaseDate = json['release_date'];
+  factory Pelicula.fromJsonMap(Map<String, dynamic> json) {
+    double voteAverage;
+    double popularity;
+    if (json['vote_average'] == null) {
+      voteAverage = 0;
+    } else {
+      voteAverage = json['vote_average'] / 1;
+    }
+    if (json['popularity'] == null) {
+      popularity = 0;
+    } else {
+      popularity = json['popularity'] / 1;
+    }
+
+    return Pelicula(
+        voteCount: json['vote_count'],
+        id: json['id'],
+        video: json['video'],
+        voteAverage: voteAverage,
+        title: json['title'],
+        popularity: popularity,
+        posterPath: json['poster_path'],
+        originalLanguage: json['original_language'],
+        originalTitle: json['original_title'],
+        genreIds: json['genre_ids'].cast<int>(),
+        backdropPath: json['backdrop_path'],
+        adult: json['adult'],
+        overview: json['overview'],
+        releaseDate: json['release_date']);
   }
   getPosterImage() {
     if (posterPath == null) {
       return 'https://www.lauriloewenberg.com/wp-content/uploads/2019/04/No_Image_Available.jpg';
     } else {
       return 'https://image.tmdb.org/t/p/w500/$posterPath';
+    }
+  }
+
+  getBackgroundImage() {
+    if (posterPath == null) {
+      return 'https://www.lauriloewenberg.com/wp-content/uploads/2019/04/No_Image_Available.jpg';
+    } else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:peliculas/src/providers/peliculas_provider.dart';
+import 'package:peliculas/src/search/search_delegate.dart';
 import 'package:peliculas/src/widgets/card_horizontal.dart';
 import 'package:peliculas/src/widgets/card_swiper_widget.dart';
 
@@ -7,6 +8,7 @@ class HomePage extends StatelessWidget {
   final _peliculasProvider = new PeliculasProvider();
   @override
   Widget build(BuildContext context) {
+    _peliculasProvider.getPopulares();
     return Scaffold(
       appBar: AppBar(
         title: Text('Peliculas en Cines'),
@@ -14,17 +16,21 @@ class HomePage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              showSearch(context: context, delegate: DataSearch());
+            },
           )
         ],
       ),
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _swiperTarjetas(),
-            _footer(context),
-          ],
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _swiperTarjetas(),
+              _footer(context),
+            ],
+          ),
         ),
       ),
     );
@@ -67,14 +73,15 @@ class HomePage extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 7.0,
+            height: 5.0,
           ),
-          FutureBuilder(
-            future: _peliculasProvider.getPopulares(),
+          StreamBuilder(
+            stream: _peliculasProvider.popularesStream,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 return CardHorizontal(
                   peliculas: snapshot.data,
+                  siguientePagina: _peliculasProvider.getPopulares,
                 );
               } else {
                 return Container(
